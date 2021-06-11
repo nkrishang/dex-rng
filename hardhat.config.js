@@ -18,6 +18,16 @@ module.exports = {
     rinkeby: {
       url: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
       accounts: [`${TEST_PRIVATE_KEY}`]
+    },
+    hardhat: {
+      // mining: {
+      //   auto: false,
+      //   interval: 200 // 200 miliseconds
+      // },
+      forking: {
+        url: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+        blockNumber: 12000000                     
+      }
     }
   },
 

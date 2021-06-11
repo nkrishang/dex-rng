@@ -30,12 +30,12 @@ contract PriceRNG is Ownable {
     address tokenB
   ) external onlyOwner {
     require(IUniswapV2Pair(pair).MINIMUM_LIQUIDITY() == 1000, "Invalid pair address provided.");
-
+    
     pairs[numOfPairs] = PairAddresses({
       tokenA: tokenA,
       tokenB: tokenB,
       pair: pair,
-      lastUpdateTimeStamp: block.timestamp
+      lastUpdateTimeStamp: 0
     });
 
     numOfPairs += 1;
@@ -46,7 +46,7 @@ contract PriceRNG is Ownable {
   /// @dev Returns a random number within the given range;
   function getRandomNumber(uint range) external returns (uint randomNumber) {
     require(numOfPairs > 0, "No Uniswap pairs available to draw randomness from.");
-
+    
     bool acceptableEntropy;
     uint blockSignature = uint(keccak256(abi.encodePacked(msg.sender, uint(blockhash(block.number - 1)))));
 
@@ -67,7 +67,7 @@ contract PriceRNG is Ownable {
 
     require(acceptableEntropy, "Cannot generate a sufficiently random number.");
     randomNumber = blockSignature % range;
-
+    
     emit RandomNumber(msg.sender, randomNumber);
   }
   
