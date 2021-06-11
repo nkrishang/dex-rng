@@ -22,3 +22,6 @@ main()
     console.error(error);
     process.exit(1);
   });
+
+// PriceRNG Address: 0xE3A652bb9C3e14d883e4F7204799B43DBe0083c7
+// RNGConsumer Address: 0x3502E335C76Aac3f2d15A4Dd63A2d4a2F10533Fd
