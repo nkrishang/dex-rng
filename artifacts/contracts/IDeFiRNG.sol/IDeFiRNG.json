@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "IPriceRNG",
-  "sourceName": "contracts/IPriceRNG.sol",
+  "contractName": "IDeFiRNG",
+  "sourceName": "contracts/IDeFiRNG.sol",
   "abi": [
     {
       "inputs": [
