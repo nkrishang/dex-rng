@@ -23,7 +23,7 @@ contract DeFiRNG is Ownable {
 
   event RandomNumber(address indexed requester, uint randomNumber);
   event PairAdded(address pair, address tokenA, address tokenB);
-  event PairActiveStatus(address pair, bool active);
+  event PairStatusUpdated(address pair, bool active);
 
   constructor() {}
 
@@ -53,7 +53,7 @@ contract DeFiRNG is Ownable {
 
     active[pair] = activeStatus;
     
-    emit PairActiveStatus(pair, activeStatus);
+    emit PairStatusUpdated(pair, activeStatus);
   }
 
   /// @dev Returns a random number within the given range;
