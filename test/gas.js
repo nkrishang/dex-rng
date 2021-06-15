@@ -5,11 +5,19 @@ const [pairs] = require('../utils/utils.js');
 describe("Gas estimates for getRandomNumber()", () => {
 
   const range = 100;
-  let priceRNG;
+  let rng;
 
   before(async () => {
-    const PriceRNG_Factory = await ethers.getContractFactory("DeFiRNG");
-    priceRNG = await PriceRNG_Factory.deploy();
+    const RNG_Factory = await ethers.getContractFactory("DeFiRNG");
+    rng = await RNG_Factory.deploy();
+  })
+
+  it("Est. gas for adding a pair", async () => {
+    const { pair } = pairs[0]; 
+    const gasEstimate = await rng.estimateGas.addPair(pair);
+    const parsedEstimate = (parseInt(gasEstimate).toString());
+
+    console.log("Gas estimate for adding pair: ", parsedEstimate);
   })
 
   it("Estimate with 1 to 5 pairs", async () => {
@@ -18,9 +26,16 @@ describe("Gas estimates for getRandomNumber()", () => {
 
     for(let addresses of pairs) {
 
-      await priceRNG.addPair(addresses.pair, addresses.tokenA, addresses.tokenB);
+      await rng.addPair(addresses.pair);
 
-      const gasEstimate = await priceRNG.estimateGas.getRandomNumber(range)
+      if(counter == 1) {
+        const statusGasEstimate = await rng.estimateGas.changePairStatus(addresses.pair, false);
+        const parsedStatusEstimate = (parseInt(statusGasEstimate).toString());
+
+        console.log("Gas estimate for changing pair status: ", parsedStatusEstimate);
+      }
+
+      const gasEstimate = await rng.estimateGas.getRandomNumber(range)
       const parsedEstimate = (parseInt(gasEstimate).toString());
 
       console.log(
