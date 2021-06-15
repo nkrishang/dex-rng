@@ -8,7 +8,7 @@ describe("Contract state changes", () => {
   
   const { pair } = pairs[0];
   const forkBlock = 12635536;
-  // const range = 100;
+  const range = 100;
 
   beforeEach(async () => {
     await forkFrom(forkBlock);
@@ -91,6 +91,23 @@ describe("Contract state changes", () => {
 
       await expect(rng.changePairStatus(incorrectPairAddr, activeStatus))
         .to.be.revertedWith("Cannot change the status of a pair that does not exist.")
+    })
+  })
+
+  describe("Getting random number", () => {
+    it("Should revert if no pairs have been added", async () => {
+      const currentIndex = parseInt((await rng.currentPairIndex()).toString())
+      expect(currentIndex).to.equal(0);
+
+      await expect(rng.getRandomNumber(range))
+        .to.be.revertedWith("No Uniswap pairs available to draw randomness from.");
+    })
+
+    it("Should emit the RandomNumber event", async () => {
+      await rng.addPair(pair);
+
+      await expect(rng.getRandomNumber(range))
+        .to.emit(rng, "RandomNumber");
     })
   })
 })
