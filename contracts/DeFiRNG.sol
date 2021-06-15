@@ -4,9 +4,9 @@ pragma solidity ^0.8.0;
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract PriceRNG is Ownable {
+contract DeFiRNG is Ownable {
 
-  uint public numOfPairs;
+  uint public currentPairIndex;
 
   struct PairAddresses {
     address tokenA;
@@ -17,9 +17,12 @@ contract PriceRNG is Ownable {
   }
 
   mapping(uint => PairAddresses) public pairs;
+  mapping(address => uint) public pairIndex;
+  mapping(address => bool) public active;
 
   event RandomNumber(address indexed requester, uint randomNumber);
   event PairAdded(address pair, address tokenA, address tokenB);
+  event PairActiveStatus(address pair, bool active);
 
   constructor() {}
 
@@ -30,31 +33,49 @@ contract PriceRNG is Ownable {
     address tokenB
   ) external onlyOwner {
     require(IUniswapV2Pair(pair).MINIMUM_LIQUIDITY() == 1000, "Invalid pair address provided.");
+    require(pairIndex[pair] == 0, "This pair already exists.");
     
-    pairs[numOfPairs] = PairAddresses({
+    currentPairIndex += 1;
+
+    pairs[currentPairIndex] = PairAddresses({
       tokenA: tokenA,
       tokenB: tokenB,
       pair: pair,
       lastUpdateTimeStamp: 0
     });
 
-    numOfPairs += 1;
+    pairIndex[pair] = currentPairIndex;
+    active[pair] = true;
 
     emit PairAdded(pair, tokenA, tokenB);
   }
 
-  /// @dev Returns a random number within the given range;
-  function getRandomNumber(uint range) external returns (uint randomNumber) {
-    require(numOfPairs > 0, "No Uniswap pairs available to draw randomness from.");
+  /// @dev Sets whether a UniswapV2 pair is actively used as a source of randomness.
+  function changePairStatus(address pair, bool activeStatus) external onlyOwner {
+    require(pairIndex[pair] != 0, "Cannot deactivate a pair that does not exist.");
+
+    active[pair] = activeStatus;
     
-    bool acceptableEntropy;
+    emit PairActiveStatus(pair, activeStatus);
+  }
+
+  /// @dev Returns a random number within the given range;
+  function getRandomNumber(uint range) external returns (uint randomNumber, bool acceptableEntropy) {
+    require(currentPairIndex > 0, "No Uniswap pairs available to draw randomness from.");
+    
     uint blockSignature = uint(keccak256(abi.encodePacked(msg.sender, uint(blockhash(block.number - 1)))));
 
-    for(uint i = 0; i < numOfPairs; i++) {
+    for(uint i = 1; i < currentPairIndex; i++) {
+
+      if(!active[pairs[i].pair]) {
+        continue;
+      }
+
       PairAddresses memory pairInfo = pairs[i];
+
       (uint reserveA, uint reserveB, uint lastUpdateTimeStamp) = getReserves(pairInfo.pair, pairInfo.tokenA, pairInfo.tokenB);
       
-      uint randomMod = (reserveA + reserveB) % 73;
+      uint randomMod = (reserveA + reserveB) % (range + 73);
       blockSignature += randomMod;
 
       if(lastUpdateTimeStamp > pairInfo.lastUpdateTimeStamp) {
@@ -65,7 +86,6 @@ contract PriceRNG is Ownable {
       }
     }
 
-    require(acceptableEntropy, "Cannot generate a sufficiently random number.");
     randomNumber = blockSignature % range;
     
     emit RandomNumber(msg.sender, randomNumber);
