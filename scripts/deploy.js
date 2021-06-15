@@ -5,10 +5,10 @@ async function main() {
 
   console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  const PriceRNG_Factory = await ethers.getContractFactory("PriceRNG");
+  const PriceRNG_Factory = await ethers.getContractFactory("DeFiRNG");
   const priceRNG = await PriceRNG_Factory.deploy();
 
-  console.log("PriceRNG address:", priceRNG.address);
+  console.log("DeFi RNG address:", priceRNG.address);
 
   const RNGConsumer_Factory = await ethers.getContractFactory("RNGConsumer");
   const rngConsumer = await RNGConsumer_Factory.deploy(priceRNG.address);
