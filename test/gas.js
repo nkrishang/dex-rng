@@ -8,7 +8,7 @@ describe("Gas estimates for getRandomNumber()", () => {
   let priceRNG;
 
   before(async () => {
-    const PriceRNG_Factory = await ethers.getContractFactory("PriceRNG");
+    const PriceRNG_Factory = await ethers.getContractFactory("DeFiRNG");
     priceRNG = await PriceRNG_Factory.deploy();
   })
 

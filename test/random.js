@@ -19,7 +19,7 @@ describe("Random Numbers", function() {
 
       await forkFrom(i);
       
-      const PriceRNG_Factory = await ethers.getContractFactory("PriceRNG");
+      const PriceRNG_Factory = await ethers.getContractFactory("DeFiRNG");
       const priceRNG = await PriceRNG_Factory.deploy();
 
       const RNGConsumer_Factory = await ethers.getContractFactory("RNGConsumer");
