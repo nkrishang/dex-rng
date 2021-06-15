@@ -7,6 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract DeFiRNG is Ownable {
 
   uint public currentPairIndex;
+  uint internal seed;
 
   struct PairAddresses {
     address tokenA;
@@ -63,7 +64,7 @@ contract DeFiRNG is Ownable {
   function getRandomNumber(uint range) external returns (uint randomNumber, bool acceptableEntropy) {
     require(currentPairIndex > 0, "No Uniswap pairs available to draw randomness from.");
     
-    uint blockSignature = uint(keccak256(abi.encodePacked(msg.sender, uint(blockhash(block.number - 1)))));
+    uint blockSignature = uint(keccak256(abi.encodePacked(msg.sender, seed, uint(blockhash(block.number - 1)))));
 
     for(uint i = 1; i < currentPairIndex; i++) {
 
@@ -87,6 +88,7 @@ contract DeFiRNG is Ownable {
     }
 
     randomNumber = blockSignature % range;
+    seed = uint(keccak256(abi.encodePacked(msg.sender, randomNumber)));
     
     emit RandomNumber(msg.sender, randomNumber);
   }
