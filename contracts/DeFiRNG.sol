@@ -88,6 +88,29 @@ contract DeFiRNG is Ownable {
     
     emit RandomNumber(msg.sender, randomNumber);
   }
+
+  /// @dev View function - non state changing random number function.
+  function viewRandomNumber(uint range) external view returns (uint randomNumber) {
+    require(currentPairIndex > 0, "No Uniswap pairs available to draw randomness from.");
+    
+    uint blockSignature = uint(keccak256(abi.encodePacked(msg.sender, seed, uint(blockhash(block.number - 1)))));
+
+    for(uint i = 1; i < currentPairIndex; i++) {
+
+      if(!active[pairs[i].pair]) {
+        continue;
+      }
+
+      PairAddresses memory pairInfo = pairs[i];
+
+      (uint reserveA, uint reserveB,) = getReserves(pairInfo.pair, pairInfo.tokenA, pairInfo.tokenB);
+      
+      uint randomMod = (reserveA + reserveB) % (range + 73);
+      blockSignature += randomMod;
+    }
+
+    randomNumber = blockSignature % range;
+  }
   
   /// @notice See `UniswapV2Library.sol`
   function getReserves(
