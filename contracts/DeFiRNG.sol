@@ -33,7 +33,7 @@ contract DeFiRNG is Ownable {
     address tokenB
   ) external onlyOwner {
     require(IUniswapV2Pair(pair).MINIMUM_LIQUIDITY() == 1000, "Invalid pair address provided.");
-    require(pairIndex[pair] == 0, "This pair already exists.");
+    require(pairIndex[pair] == 0, "This pair already exists as a randomness source.");
     
     currentPairIndex += 1;
 
