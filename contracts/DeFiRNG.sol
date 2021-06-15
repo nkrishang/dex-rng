@@ -49,7 +49,7 @@ contract DeFiRNG is Ownable {
 
   /// @dev Sets whether a UniswapV2 pair is actively used as a source of randomness.
   function changePairStatus(address pair, bool activeStatus) external onlyOwner {
-    require(pairIndex[pair] != 0, "Cannot deactivate a pair that does not exist.");
+    require(pairIndex[pair] != 0, "Cannot change the status of a pair that does not exist.");
 
     active[pair] = activeStatus;
     
