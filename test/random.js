@@ -7,11 +7,11 @@ describe("Random Numbers", function() {
 
   const range = 100;
 
-  const startBlock = 12000000;
-  const endBlock = 12001000;
+  const startBlock = 12635536;
+  const endBlock = startBlock + 50;
   const blockInterval = 1;
 
-  it("Should print a different random number every time (almost)", async () => {
+  it("Should print a different random number every time.", async () => {
 
     let prevRandomNumber = 0;
 
@@ -28,7 +28,7 @@ describe("Random Numbers", function() {
       console.log("Block Number: ", await ethers.provider.getBlockNumber());
 
       for(let addresses of pairs) {
-        await priceRNG.addPair(addresses.pair, addresses.tokenA, addresses.tokenB);
+        await priceRNG.addPair(addresses.pair);
       }
 
       await rngConsumer.random(range);
@@ -40,14 +40,6 @@ describe("Random Numbers", function() {
         console.log("Random Number generated: ", randomNum);
         prevRandomNumber = randomNum;
       }
-
-      const minePromise = new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve();
-        }, 1000)
-      })
-
-      await minePromise;
     }
   })
 })
