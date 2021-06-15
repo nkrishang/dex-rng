@@ -28,19 +28,15 @@ contract DeFiRNG is Ownable {
   constructor() {}
 
   /// @dev Add a UniswapV2 pair to draw randomness from.
-  function addPair(
-    address pair, 
-    address tokenA, 
-    address tokenB
-  ) external onlyOwner {
+  function addPair(address pair) external onlyOwner {
     require(IUniswapV2Pair(pair).MINIMUM_LIQUIDITY() == 1000, "Invalid pair address provided.");
     require(pairIndex[pair] == 0, "This pair already exists as a randomness source.");
     
     currentPairIndex += 1;
 
     pairs[currentPairIndex] = PairAddresses({
-      tokenA: tokenA,
-      tokenB: tokenB,
+      tokenA: IUniswapV2Pair(pair).token0(),
+      tokenB: IUniswapV2Pair(pair).token1(),
       pair: pair,
       lastUpdateTimeStamp: 0
     });
@@ -48,7 +44,7 @@ contract DeFiRNG is Ownable {
     pairIndex[pair] = currentPairIndex;
     active[pair] = true;
 
-    emit PairAdded(pair, tokenA, tokenB);
+    emit PairAdded(pair, pairs[currentPairIndex].tokenA, pairs[currentPairIndex].tokenB);
   }
 
   /// @dev Sets whether a UniswapV2 pair is actively used as a source of randomness.
