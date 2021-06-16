@@ -2,8 +2,18 @@ const { ethers } = require("hardhat");
 
 const [pairs, forkFrom] = require('../utils/utils.js');
 
-describe("Random Numbers", function() {
-  this.timeout(120000); // Let it run for 2 minutes
+/**
+ * This script is a 'health check' for the RNG.
+ * 
+ * The script surveys the 10 most recent blocks and calls `getRandomNumber()`. It prints the random number generated for
+ * that block, and checks whether it was generated with 'acceptable entropy'.
+ * 
+ * A random number is said to be generated with 'acceptable entropy' if the reserve value of at least one DEX pair used in the random number 
+ * generation has updated, since the last `getRandomNumber()` call.
+ */
+
+describe("RNG health check", function() {
+  this.timeout(180000); // Let it run for 3 minutes max
 
   const range = 100;
 
@@ -21,7 +31,7 @@ describe("Random Numbers", function() {
     console.log("Most recent block: ", endBlock, "\n");
   })
 
-  it("Should print a different random number every time.", async () => {
+  it("Should print the random number generated and check whether it was generated with acceptable entropy.", async () => {
 
     let prevRandomNumber = 0;
     let sameNumbers = 0;
