@@ -6,5 +6,5 @@ interface IDexRNG {
   function getRandomNumber(uint range) external returns (uint randomNumber, bool acceptableEntropy);
 
   /// @dev View function - non state changing random number function.
-  function viewRandomNumber(uint range) external view returns (uint randomNumber)
+  function viewRandomNumber(uint range) external view returns (uint randomNumber);
 }
