@@ -59,7 +59,7 @@ const forkFrom = async (blockNumber) => {
       params: [
         {
           forking: {
-            jsonRpcUrl: ALCHEMY_ENDPOINT_MAINNET,
+            jsonRpcUrl: process.env.ALCHEMY_ENDPOINT_MAINNET,
             blockNumber: blockNumber,
           },
         },

@@ -50,7 +50,7 @@ describe("RNG health check", function() {
 
       let acceptableEntropy = false;
       
-      const RNG_Factory = await ethers.getContractFactory("DeFiRNG");
+      const RNG_Factory = await ethers.getContractFactory("DexRNG");
       const rng = await RNG_Factory.deploy();
 
       const RNGConsumer_Factory = await ethers.getContractFactory("RNGConsumer");

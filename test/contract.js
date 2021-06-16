@@ -13,7 +13,7 @@ describe("Contract state changes", () => {
   beforeEach(async () => {
     await forkFrom(forkBlock);
 
-    const RNG_Factory = await ethers.getContractFactory("DeFiRNG");
+    const RNG_Factory = await ethers.getContractFactory("DexRNG");
     rng = await RNG_Factory.deploy(); 
   })
 

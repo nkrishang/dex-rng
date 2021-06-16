@@ -1,14 +1,18 @@
 const { ethers } = require("hardhat");
 
-const [pairs] = require('../utils/utils.js');
+const [pairs, forkFrom] = require('../utils/utils.js');
 
 describe("Gas estimates for getRandomNumber()", () => {
 
+  const forkBlock = 12635536;
   const range = 100;
   let rng;
 
   before(async () => {
-    const RNG_Factory = await ethers.getContractFactory("DeFiRNG");
+
+    await forkFrom(forkBlock)
+
+    const RNG_Factory = await ethers.getContractFactory("DexRNG");
     rng = await RNG_Factory.deploy();
   })
 
