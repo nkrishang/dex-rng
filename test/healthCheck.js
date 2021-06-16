@@ -2,7 +2,7 @@ const { ethers } = require("hardhat");
 
 const [pairs, forkFrom] = require('../utils/utils.js');
 
-describe("Checking entropy of RNG by block", function() {
+describe("Random Numbers", function() {
   this.timeout(120000); // Let it run for 2 minutes
 
   const range = 100;
@@ -10,7 +10,7 @@ describe("Checking entropy of RNG by block", function() {
   let endBlock
   let startBlock;
 
-  const numOfBlocksToSurvey = 15;
+  const numOfBlocksToSurvey = 10;
   const blockInterval = 1;
 
   before(async () => {
@@ -21,7 +21,10 @@ describe("Checking entropy of RNG by block", function() {
     console.log("Most recent block: ", endBlock, "\n");
   })
 
-  it("Should check whether a block has acceptable entropy.", async () => {
+  it("Should print a different random number every time.", async () => {
+
+    let prevRandomNumber = 0;
+    let sameNumbers = 0;
 
     let prevTimeStamps = [];
     let numOfUnacceptableEntropy = 0;
@@ -37,40 +40,48 @@ describe("Checking entropy of RNG by block", function() {
 
       let acceptableEntropy = false;
       
-      const PriceRNG_Factory = await ethers.getContractFactory("DeFiRNG");
-      const priceRNG = await PriceRNG_Factory.deploy();
+      const RNG_Factory = await ethers.getContractFactory("DeFiRNG");
+      const rng = await RNG_Factory.deploy();
 
       const RNGConsumer_Factory = await ethers.getContractFactory("RNGConsumer");
-      const rngConsumer = await  RNGConsumer_Factory.deploy(priceRNG.address);
+      const rngConsumer = await  RNGConsumer_Factory.deploy(rng.address);
 
       for(let addresses of pairs) {
-        await priceRNG.addPair(addresses.pair);
+        await rng.addPair(addresses.pair);
       }
 
-      const currentIndex = parseInt((await priceRNG.currentPairIndex()).toString())
+      const currentIndex = parseInt((await rng.currentPairIndex()).toString())
 
       if(i == startBlock) {
         for(let i = 1; i <= currentIndex; i++) {
-          const pairObject = await priceRNG.pairs(i);
+          const pairObject = await rng.pairs(i);
           const timeStamp = parseInt((pairObject.lastUpdateTimeStamp).toString())
   
           prevTimeStamps.push(timeStamp);
         }
-      }   
+      }
 
       await rngConsumer.random(range);
 
+      // Get random number
+      const randomNum = parseInt((await rngConsumer.randomNumber()).toString());
+      if(randomNum == prevRandomNumber) {
+        sameNumbers++;
+      } else {
+        console.log("Random Number generated: ", randomNum);
+        prevRandomNumber = randomNum;
+      }
+
+      // Timestamp entropy check
       let newTimeStamps = [];
       let updatedPairs = [];
 
       for(let j = 1; j <= currentIndex; j++) {
-        const pairObject = await priceRNG.pairs(j);
+        const pairObject = await rng.pairs(j);
         const timeStamp = parseInt((pairObject.lastUpdateTimeStamp).toString())
 
         if(timeStamp > prevTimeStamps[j-1]) {
           acceptableEntropy = true;
-
-          // console.log("Pair addresses: ", pairObject.pair);
 
           for(let addresses of pairs) {
             if(addresses.pair == pairObject.pair) {
@@ -86,14 +97,14 @@ describe("Checking entropy of RNG by block", function() {
       prevTimeStamps = newTimeStamps;
 
       if(updatedPairs.length > 0) console.log("Pairs that updated: ", updatedPairs);
-      console.log("Acceptable entropy: ", acceptableEntropy);
-      console.log("\n")
+      console.log("Acceptable entropy: ", acceptableEntropy, '\n');
 
       if(!acceptableEntropy) numOfUnacceptableEntropy++;
     }
 
     console.log("Number of blocks tested over: ", (endBlock - startBlock) / blockInterval)
     console.log("Number of blocks with unacceptable entropy: ", numOfUnacceptableEntropy);
+    console.log("Number of times the same 'random' number appeared consecutively: ", sameNumbers);
     console.log("Number of updates by pair: ", pairUpdates);
   })
 })
