@@ -9,19 +9,19 @@ contract RNGConsumer is Ownable {
   uint public randomNumber;
   bool public acceptableEntropy;
 
-  IDeFiRNG internal priceRNG;
+  IDexRNG internal priceRNG;
 
   event PriceRNGSet(address priceRNGAddress);
   event RandomNumber(uint randomNumber);
 
   constructor(address _priceRNG) {
-    priceRNG = IDeFiRNG(_priceRNG);
+    priceRNG = IDexRNG(_priceRNG);
     emit PriceRNGSet(_priceRNG);
   }
 
   /// @dev Sets the address of the Price RNG.
   function setPriceRNG(address _priceRNG) external onlyOwner {
-    priceRNG = IDeFiRNG(_priceRNG);
+    priceRNG = IDexRNG(_priceRNG);
     emit PriceRNGSet(_priceRNG);
   }
 
