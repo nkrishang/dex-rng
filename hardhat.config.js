@@ -15,15 +15,9 @@ const TEST_PRIVATE_KEY = process.env.TEST_PRIVATE_KEY;
 module.exports = {
   solidity: "0.8.0",
   networks: {
-    rinkeby: {
-      url: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+    mainnet: {
+      url: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
       accounts: [`${TEST_PRIVATE_KEY}`]
-    },
-    hardhat: {
-      forking: {
-        url: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
-        blockNumber: 12635536                     
-      }
     }
   },
 
