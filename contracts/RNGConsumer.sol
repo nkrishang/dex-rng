@@ -2,11 +2,13 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import './IDeFiRNG.sol';
+import './IDexRNG.sol';
 
 contract RNGConsumer is Ownable {
 
   uint public randomNumber;
+  bool public acceptableEntropy;
+
   IDeFiRNG internal priceRNG;
 
   event PriceRNGSet(address priceRNGAddress);
@@ -25,7 +27,7 @@ contract RNGConsumer is Ownable {
 
   /// @dev Gets a random number from the Price RNG.
   function random(uint range) external {
-    randomNumber = priceRNG.getRandomNumber(range);
+    (randomNumber, acceptableEntropy) = priceRNG.getRandomNumber(range);
     emit RandomNumber(randomNumber);
   }
 }

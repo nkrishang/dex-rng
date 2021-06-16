@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import '@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol';
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract DeFiRNG is Ownable {
+contract DexRNG is Ownable {
 
   uint public currentPairIndex;
   uint internal seed;
@@ -62,24 +62,24 @@ contract DeFiRNG is Ownable {
     
     uint blockSignature = uint(keccak256(abi.encodePacked(msg.sender, seed, uint(blockhash(block.number - 1)))));
 
-    for(uint i = 1; i < currentPairIndex; i++) {
+    for(uint i = 1; i <= currentPairIndex; i++) {
 
       if(!active[pairs[i].pair]) {
         continue;
       }
 
-      PairAddresses memory pairInfo = pairs[i];
-
-      (uint reserveA, uint reserveB, uint lastUpdateTimeStamp) = getReserves(pairInfo.pair, pairInfo.tokenA, pairInfo.tokenB);
+      (uint reserveA, uint reserveB, uint lastUpdateTimeStamp) = getReserves(pairs[i].pair, pairs[i].tokenA, pairs[i].tokenB);
       
       uint randomMod = (reserveA + reserveB) % (range + 73);
       blockSignature += randomMod;
 
-      if(lastUpdateTimeStamp > pairInfo.lastUpdateTimeStamp) {
-        acceptableEntropy = true;
-        
-        pairInfo.lastUpdateTimeStamp = lastUpdateTimeStamp;
-        pairs[i] = pairInfo;
+      if(lastUpdateTimeStamp > pairs[i].lastUpdateTimeStamp) {
+
+        if(!acceptableEntropy) {
+          acceptableEntropy = true;
+        }
+
+        pairs[i].lastUpdateTimeStamp = lastUpdateTimeStamp;
       }
     }
 
