@@ -1,7 +1,6 @@
 // from: https://github.com/ethereumvex/SushiMaker-bridge-exploit/blob/master/utils/utils.js
 const hre = require("hardhat");
 require('dotenv').config();
-const ALCHEMY_API_KEY = process.env.ALCHEMY_KEY;
 
 const WETH_USDC_UNI = {
     name: 'WETH_USDC_UNI',
@@ -60,7 +59,7 @@ const forkFrom = async (blockNumber) => {
       params: [
         {
           forking: {
-            jsonRpcUrl: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+            jsonRpcUrl: ALCHEMY_ENDPOINT_MAINNET,
             blockNumber: blockNumber,
           },
         },

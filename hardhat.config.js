@@ -2,10 +2,6 @@ require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-etherscan");
 require('dotenv').config();
 
-// Go to https://www.alchemyapi.io, sign up, create
-// a new App in its dashboard, and replace "KEY" with its key
-const ALCHEMY_API_KEY = process.env.ALCHEMY_KEY;
-
 // Replace this private key with your Ropsten account private key
 // To export your private key from Metamask, open Metamask and
 // go to Account Details > Export Private Key
@@ -16,7 +12,7 @@ module.exports = {
   solidity: "0.8.0",
   networks: {
     mainnet: {
-      url: `https://eth-mainnet.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+      url: process.env.ALCHEMY_ENDPOINT_MAINNET,
       accounts: [`${TEST_PRIVATE_KEY}`]
     }
   },
