@@ -20,6 +20,7 @@ contract DexRNG is Ownable {
   mapping(uint => PairAddresses) public pairs;
   mapping(address => uint) public pairIndex;
   mapping(address => bool) public active;
+  mapping(uint => bool) public blockEntropy;
 
   event RandomNumber(address indexed requester, uint randomNumber);
   event PairAdded(address pair, address tokenA, address tokenB);
@@ -59,6 +60,8 @@ contract DexRNG is Ownable {
   /// @dev Returns a random number within the given range;
   function getRandomNumber(uint range) external returns (uint randomNumber, bool acceptableEntropy) {
     require(currentPairIndex > 0, "No Uniswap pairs available to draw randomness from.");
+
+    acceptableEntropy = blockEntropy[block.number];
     
     uint blockSignature = uint(keccak256(abi.encodePacked(msg.sender, seed, uint(blockhash(block.number - 1)))));
 
@@ -77,6 +80,7 @@ contract DexRNG is Ownable {
 
         if(!acceptableEntropy) {
           acceptableEntropy = true;
+          blockEntropy[block.number] = true;
         }
 
         pairs[i].lastUpdateTimeStamp = lastUpdateTimeStamp;
