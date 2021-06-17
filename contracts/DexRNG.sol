@@ -70,7 +70,7 @@ contract DexRNG is Ownable {
 
       (uint reserveA, uint reserveB, uint lastUpdateTimeStamp) = getReserves(pairs[i].pair, pairs[i].tokenA, pairs[i].tokenB);
       
-      uint randomMod = (reserveA + reserveB) % (range + 73);
+      uint randomMod = (reserveA + reserveB) % (range + seed);
       blockSignature += randomMod;
 
       if(lastUpdateTimeStamp > pairs[i].lastUpdateTimeStamp) {
